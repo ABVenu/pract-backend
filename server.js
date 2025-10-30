@@ -98,7 +98,7 @@ app.get("/test", (req, res) => {
 
 
 app.get("/test2", (req, res) => {
-  res.send("This is test 2 page");
+  res.send("This is test 2 page, Hi All");
 });
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
