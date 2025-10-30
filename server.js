@@ -100,5 +100,28 @@ app.get("/test", (req, res) => {
 app.get("/test2", (req, res) => {
   res.send("This is test 2 page, Hi All");
 });
+
+
+// Very heavy recursive Fibonacci (CPU intensive)
+function fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 1) + fib(n - 2);
+}
+
+// Hardcoded CPU stress endpoint
+app.get('/test3', (req, res) => {
+  const start = Date.now();
+  const n = 40; // Hardcoded heavy computation
+  const result = fib(n);
+  const duration = Date.now() - start;
+
+  res.json({
+    message: `Fibonacci(${n}) computed successfully`,
+    result,
+    duration_ms: duration,
+    note: 'This endpoint is CPU intensive and meant only for testing CPU utilization.',
+  });
+});
+
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
