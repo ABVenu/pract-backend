@@ -1,12 +1,3 @@
 [
-  {
-    "email": "venu@gmail.com",
-    "password": "venu1234",
-    "profilePic": "https://pract-demo-profilepic.s3.eu-north-1.amazonaws.com/profilePics/1761699319018_Profile%20Pic%20Male.png"
-  },
-  {
-    "email": "shruti@gmail.com",
-    "password": "shruti123",
-    "profilePic": "https://pract-demo-profilepic.s3.eu-north-1.amazonaws.com/profilePics/1761703862504_Profile%20Pic%20Male.png"
-  }
+  
 ]

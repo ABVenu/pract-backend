@@ -1,25 +1,20 @@
-name: Build and Push to ECR
+name: Deploy Backend to ECS
 
 on:
   push:
-    branches:
-      - main
-
-env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}
-  ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-  IMAGE_TAG: latest
+    branches: [ main ]  # Deploy whenever you push to main
 
 jobs:
-  build:
-    name: Build and Push Docker image to Amazon ECR
+  deploy:
+    name: Build, Push to ECR, and Deploy to ECS
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      # 1️⃣ Checkout your repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
+      # 2️⃣ Configure AWS credentials (store these in GitHub Secrets)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -27,15 +22,28 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      # 3️⃣ Login to Amazon ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image
+      # 4️⃣ Build, tag, and push image to ECR
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: prac-backend   # <-- replace with your ECR repo name
+          IMAGE_TAG: latest
         run: |
-          docker build -t prac-backend .
-          docker tag prac-backend:latest 804878519643.dkr.ecr.eu-north-1.amazonaws.com/prac-backend:latest
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      - name: Push image to ECR
-        run: |
-          docker push 804878519643.dkr.ecr.eu-north-1.amazonaws.com/prac-backend:latest
+      # 5️⃣ Deploy new image to ECS
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: https://eu-north-1.console.aws.amazon.com/ecs/v2/task-definitions/prca-demo-backend/1/json?region=eu-north-1 # <-- path to your ECS task definition file
+          service: prca-demo-backend-service-cp0c50yg        # <-- replace with your ECS service name
+          cluster: pract-demo-backend        # <-- replace with your ECS cluster name
+          wait-for-service-stability: true
