@@ -1,39 +1,30 @@
 {
-  "family": "demo-backend-fullstack",
+  "family": "prca-demo-backend",
   "networkMode": "awsvpc",
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "1024",
   "memory": "3072",
   "executionRoleArn": "arn:aws:iam::804878519643:role/ecsTaskExecutionRole",
-  "runtimePlatform": {
-    "cpuArchitecture": "X86_64",
-    "operatingSystemFamily": "LINUX"
-  },
   "containerDefinitions": [
     {
-      "name": "demo-backend",
-      "image": "804878519643.dkr.ecr.eu-north-1.amazonaws.com/demo-backend:latest",
+      "name": "prac-backend",
+      "image": "804878519643.dkr.ecr.eu-north-1.amazonaws.com/prac-backend:latest",
       "essential": true,
       "portMappings": [
         {
-          "containerPort": 80,
+          "containerPort": 3000,
+          "hostPort": 3000,
           "protocol": "tcp"
         }
       ],
       "environment": [
-        {
-          "name": "S3_BUCKET",
-          "value": "pract-demo-profilepic"
-        },
-        {
-          "name": "AWS_REGION",
-          "value": "eu-north-1"
-        }
+        { "name": "S3_BUCKET", "value": "pract-demo-profilepic" },
+        { "name": "AWS_REGION", "value": "eu-north-1" }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/demo-backend-fullstack",
+          "awslogs-group": "/ecs/prca-demo-backend",
           "awslogs-region": "eu-north-1",
           "awslogs-stream-prefix": "ecs"
         }
