@@ -5,6 +5,7 @@ import path from "path";
 import dotenv from "dotenv";
 import cors from "cors";
 import AWS from "aws-sdk";
+import os from "os"
 
 dotenv.config();
 const app = express();
@@ -123,5 +124,8 @@ app.get('/test3', (req, res) => {
   });
 });
 
+app.get('/test4', (req, res) => {
+  res.send(`Hello from ECS Task running on host: ${os.hostname()}`);
+});
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
